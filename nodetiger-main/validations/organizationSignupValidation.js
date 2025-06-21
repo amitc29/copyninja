@@ -1,0 +1,92 @@
+import Joi from 'joi';
+
+const organizationSignupValidation = Joi.object({
+  name: Joi.string().required().messages({
+    "any.required": "Organization name is required.",
+    "string.empty": "Organization name cannot be empty.",
+  }),
+  email: Joi.string().email().required().messages({
+    "any.required": "Email is required.",
+    "string.empty": "Email cannot be empty.",
+    "string.email": "Email must be a valid email address.",
+  }),
+  contactNumber: Joi.string()
+    .required()
+    .pattern(/^\+?[0-9()-]*$/)
+    .min(10)
+    .messages({
+      "any.required": "Contact number is required.",
+      "string.pattern.base":
+        "Contact number must be a valid number with optional +, digits, (), or -.",
+      "string.min": "Contact number must be at least 10 digits long.",
+    }),
+  type: Joi.string()
+    .required()
+    .valid(
+      "School",
+      "University",
+      "College",
+      "Academy",
+      "Sport Organisation",
+      "Other"
+    )
+    .messages({
+      "any.required": "Type is required.",
+      "any.only":
+        "Invalid type value. Must be one of the value : School, University, College, Academy, Sport Organisation, and Other.",
+    }),
+    contactNumber: Joi.string().required().pattern(/^\+?[0-9()-]*$/).min(10).messages({
+        "any.required": "Contact number is required.",
+        'string.pattern.base': 'Contact number must be a valid number with optional +, digits, (), or -.',
+        'string.min': 'Contact number must be at least 10 digits long.'
+    }),
+    // level: Joi.string().required()
+    //     .valid(
+    //         "Town",
+    //         "City",
+    //         "District",
+    //         "State",
+    //         "National",
+    //         "International"
+    //     ).messages({
+    //         "any.required": "Level is required.",
+    //         "any.only":
+    //             "Invalid gender value. Must be one of the value : Town City, District, State, National, and International."
+    //     }),
+    level: Joi.string().when('type', {
+        is: 'Sport Organisation',
+        then: Joi.required().valid(
+            "Town",
+            "City",
+            "District",
+            "State",
+            "National",
+            "International"
+        ).messages({
+            "any.required": "Level is required for Sport Organisation.",
+            "any.only": "Invalid level value. Must be one of: Town, City, District, State, National, International."
+        }),
+        otherwise: Joi.forbidden()
+    }),
+    headQuarter: Joi.string().required().messages({
+        "any.required": "Head quarter is required.",
+        "string.empty": "Head quarter cannot be empty."
+    }),
+    logo: Joi.string().required().messages({
+        "any.required": "Logo is required.",
+        "string.empty": "Logo cannot be empty."
+    }),
+    type: Joi.string().required()
+        .valid(
+            "School",
+            "University",
+            "College",
+            "Academy",
+            "Sport Organisation",
+            "Other"
+        ).messages({
+
+        })
+});
+
+export default organizationSignupValidation;

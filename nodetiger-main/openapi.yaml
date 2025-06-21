@@ -1,0 +1,1273 @@
+openapi: 3.0.3
+info:
+  version: latest
+  title: NodeTiger REST API (SportsKeyz Auth)
+  description: |-
+    NodeTiger is the software behind [SportsKeyz Auth](https://SportsKeyz.com/auth). This is its REST API.
+
+servers:
+  - url: "https://auth.zahansports.com/"
+
+tags:
+  - name: auth
+    description: APIs for authentication and authorization.
+  - name: oauth
+    description: APIs for dealing with OAuth flows.
+  - name: socialAuth
+    description: Social Auth APIs.
+
+paths:
+  /register:
+    post:
+      summary: Signs a user up.
+      description: >
+        Creates a new user.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "email+password":
+                value:
+                  email: user@example.com
+                  password: password1
+              "phone+password":
+                value:
+                  phone: "1234567890"
+                  password: password1
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                password:
+                  type: string
+                data:
+                  type: object
+      responses:
+        200:
+          description: >
+            Return a response for OTP verification if user did not exist and is signed up.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message: 
+                    type: string
+                    example: "We have sent an OTP on your phone number for verification"
+
+        400:
+          description: There is no such user.
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the operation failed due to some constraint not being met (such a user already exists for example).
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /send-otp:
+    post:
+      summary: Sent an OTP to user for sign up OR sign in verification.
+      description: >
+        Sent an OTP to user for sign up OR sign in verification.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "email":
+                value:
+                  email: user@example.com
+              "phone":
+                value:
+                  phone: "1234567890"
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                data:
+                  type: object
+      responses:
+        200:
+          description: >
+            Sent an OTP to user for sign up OR sign in verification.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message: 
+                    type: string
+                    example: "We have sent an OTP on your email/phone number for verification."
+
+        400:
+          description: Invalid email or phone-number parameter.
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the phone-number OR email not found
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /verify-otp:
+    post:
+      summary: Verify an OTP for sign up OR sign in.
+      description: >
+        Verify an OTP for sign up OR sign in.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "email+otp":
+                value:
+                  email: user@example.com
+                  otp: "859377"
+              "phone+otp":
+                value:
+                  phone: "1234567890"
+                  otp: "532352"
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                otp:
+                  type: integer
+                data:
+                  type: object
+      responses:
+        200:
+          description: >
+            Return an OTP verified message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "OTP successfully verified."
+                  spid:
+                    type: string
+                    example: "1111-2222-3333"
+                  accessToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWJlNmZjZS04ZDZjLTQwNTctYTAyMi0wMTJjMjA2YzEyNjciLCJpYXQiOjE3MDA4MDMyODMsImV4cCI6MTcwMDgwNjg4M30.3_vFj18ilywU3BJaU-dX9LsQMct_qhcqYpZgmbf-Kj0"
+                  refreshToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWJlNmZjZS04ZDZjLTQwNTctYTAyMi0wMTJjMjA2YzEyNjciLCJpYXQiOjE3MDA4MDMyODMsImV4cCI6MTcwMDg4OTY4M30.n82a_T6EIH0Df0mzBROoHYwHINcRTpYoOAaaTFjlTJo"
+                  expiresIn:
+                    type: string
+                    example: "1 hour"
+                  tokenType:
+                    type: string
+                    example: "Bearer"
+        400:
+          description: Invalid OTP or phone-number / email.
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the phone-number / email not found or OTP expired.
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /resend-otp:
+    post:
+      summary: Resent an OTP for signup.
+      description: >
+        Resent an OTP for signup.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "email":
+                value:
+                  email: user@example.com
+              "phone":
+                value:
+                  phone: "1234567890"
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                data:
+                  type: object
+      responses:
+        200:
+          description: >
+            Resent an OTP for verification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message: 
+                    type: string
+                    example: "We have sent an OTP on your phone number for verification."
+
+        400:
+          description: Invalid email or phone-number parameter.
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the phone-number OR email not found
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /login:
+    post:
+      summary: Sign in a user.
+      description: >
+        Sign in a user.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "email+password":
+                value:
+                  email: user@example.com
+                  password: password1
+              "phone+password":
+                value:
+                  phone: "1234567890"
+                  password: password1
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                password:
+                  type: string
+                data:
+                  type: object
+      responses:
+        200:
+          description: >
+            Return a successfull sign in response with accessToken and refreshToken.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  accessToken:
+                    type: string
+                    example: "access-token"
+                  refreshToken:
+                    type: string
+                    example: "refresh-token"
+                  message: 
+                    type: string
+                    example: "Logged in successfully"
+
+        400:
+          description: It may also mean that invalid paramaters passed.
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the operation failed due to some constraint not being met (such a user not exists or password not matched).
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /forgot-password:
+    post:
+      summary: Forogot a password.
+      description: >
+        Forgot a password.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "email":
+                value:
+                  email: user@example.com
+              "phone":
+                value:
+                  phone: "1234567890"
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                data:
+                  type: object
+      responses:
+        200:
+          description: >
+            {}
+          content:
+            application/json:
+              schema:
+                type: object
+
+        400:
+          description: Invalid email or phone-number parameter.
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the phone-number OR email not found
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /verify:
+    post:
+      summary: Recover a password.
+      description: >
+        Recover a password Through OTP Verification.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "email+otp":
+                value:
+                  email: user@example.com
+                  otp: "859377"
+              "phone+otp":
+                value:
+                  phone: "1234567890"
+                  otp: "532352"
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                otp:
+                  type: integer
+                data:
+                  type: object
+      responses:
+        200:
+          description: >
+            Return a success response with accessToken and refreshToken.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  accessToken: 
+                    type: string
+                    example: "access-token"
+                  refreshToken: 
+                    type: string
+                    example: "refresh-token"
+
+        400:
+          description: Invalid OTP or phone-number / email.
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the phone-number / email not found or OTP expired
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /reset-password:
+    post:
+      summary: Reset a password.
+      description: >
+        Reset a password.
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "email+password":
+                value:
+                  email: user@example.com
+                  password: password1
+              "phone+password":
+                value:
+                  phone: "1234567890"
+                  password: password1
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                password:
+                  type: string
+                data:
+                  type: object
+      responses:
+        200:
+          description: >
+            Return a successfully password changed response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message: 
+                    type: string
+                    example: "Password reset successfully"
+
+        400:
+          description: It may also mean that invalid paramaters passed.
+          $ref: "#/components/responses/BadRequestResponse"
+        
+        404:
+          description: It may also mean that the operation failed due to some constraint not being met (such a user not exists or password not matched).
+          $ref: "#/components/responses/NotFoundResponse"
+
+        401:
+          description: It may also mean that the operation failed due to token not passed or invalid token.
+          $ref: "#/components/responses/UnauthorizedResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /token:
+    post:
+      summary: Get tokens.
+      description: >
+        Get an access and refresh tokens.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "grant_type+email+password":
+                value:
+                  grant_type: password
+                  email: user@example.com
+                  password: password1
+              "grant_type+phone+password":
+                value:
+                  grant_type: password
+                  phone: "1234567890"
+                  password: password1
+              "grant_type+refresh_token":
+                value:
+                  grant_type: refresh_token
+                  refresh_token: refresh_token1
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                password:
+                  type: string
+                refresh_token:
+                  type: string
+                data:
+                  type: object
+      responses:
+        200:
+          description: >
+            Return a successfull response with accessToken and refreshToken.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  accessToken: 
+                    type: string
+                    example: "access-token"
+                  refreshToken: 
+                    type: string
+                    example: "refresh-token"
+
+        400:
+          description: It may also mean that invalid paramaters passed.
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the operation failed due to some constraint not being met (such a user not exists or password not matched).
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /protected:
+    post:
+      summary: Protected (authorize) route.
+      description: >
+        Protected route, only access through bearer token in a authorization header
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        200:
+          description: >
+            Return a successfull response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message: 
+                    type: string
+                    example: "You have access to the protected route"
+
+        401:
+          description: It may also mean that the operation failed due to token not passed or invalid token.
+          $ref: "#/components/responses/UnauthorizedResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /logout:
+    post:
+      summary: Logout an user.
+      description: >
+        Logout an user from the system
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        200:
+          description: >
+            Return a logout successfull response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message: 
+                    type: string
+                    example: "Log out successfully"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /oauth/set_client:
+    post:
+      summary: Setting up a client.
+      description: >
+        Setting up a client.
+      tags:
+        - oauth
+      requestBody:
+        content:
+          application/json:
+            examples:
+              "clientId+clientSecret+redirectUri+grants+scopes":
+                value:
+                  clientId: "DSU4c2ZeQExNmdd7YpHBMDEr0ZBwtr"
+                  clientSecret: "zvIZg0MEpE6cmEVKIAO_xq0FueOVeg0vWiHoMHigEYDS6HiCj-iImHYawr0s"
+                  redirectUri: "http://localhost:3000/callback"
+                  grants: ["authorization_code", "refresh_token", "password"]
+                  scopes: ["phone", "profile", "email", "openid"]
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                clientSecret:
+                  type: string
+                redirectUri:
+                  type: string
+                grants:
+                  type: array
+                  items:
+                    type: string
+                scopes:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        200:
+          description: >
+            Return a successfull response with created client object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message: 
+                    type: string
+                    example: "string"
+
+        400:
+          description: If client already exist.
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the operation failed due to some constraint not being met.
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /oauth/authorize:
+    get:
+      summary: Authorize an OAuth2 client.
+      description: Authorize an OAuth2 client with various parameters.
+      tags:
+        - oauth
+      parameters:
+        - name: response_type
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The response type requested by the client.
+        - name: client_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The client ID of the OAuth2 client.
+        - name: redirect_uri
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The redirect URI where the response will be sent.
+        - name: scope
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The requested scope for the access token.
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+          description: An optional state parameter for the client.
+        - name: code_challenge
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The code challenge used for PKCE.
+        - name: code_challenge_method
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - s256
+          description: The method used to generate the code challenge (e.g., "S256").
+      responses:
+        200:
+          description: >
+            Return a successfull response with authorization code and related details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authorizationCode:
+                    type: string
+                    example: "5edd38a734a3e8a6dbf8ae435f2b109ede590dba"
+                  expiresAt: 
+                    type: string
+                    example: "2023-08-31T11:17:37.596Z"
+                  redirectUri:
+                    type: string
+                    example: "https://localhost:3000/callback"
+                  scope:
+                    type: string
+                    example: "phone profile email openid"
+                  clientId:
+                    type: string
+                    example: "DSU4c2ZeQExNmddRTLj7YpHBMDEr0zAZBwtr"
+                  userId:
+                    type: string
+                    example: "8648ac47-c1f2-43ad-997a-925c77e0c8ba"
+
+        400:
+          description: If related parameters are not passed
+          $ref: "#/components/responses/BadRequestResponse"
+
+        404:
+          description: It may also mean that the operation failed due to some constraint not being met.
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /oauth/token:
+    post:
+      summary: Retrieve Access Token.
+      description: >
+        Retrieve an access token on behalf of authorization_code / password / refresh_token
+      tags:
+        - oauth
+      security:
+        - basicAuth: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            examples:
+              "grant_type+code+client_id+client_secret+redirect_uri+code_verifier":
+                value:
+                  grant_type: "authorization_code"
+                  code: "zvIZg0MEpE6cmEVKIAO_xq0Fueg0vWiHoMHigEYDS6HiCj-iImHYawr0s"
+                  client_id: "DSU42ZeQExNmddRTLjHBMDEr0zAZBwtr"
+                  client_secret: "zvIZg0MEpE6cmEV4UVmKIAO_xq0FueOVeg0vHigEYDS6HiCj-iImHYawr0s"
+                  redirect_uri: "https://localhost:3000/callback"
+                  code_verifier: "A97QAqe8"
+              "grant_type+client_id+client_secret+redirect_uri+refresh_token":
+                value:
+                  grant_type: "refresh_token"
+                  client_id: "DSU42ZeQExNmddRTLjHBMDEr0zAZBwtr"
+                  client_secret: "zvIZg0MEpE6cmEV4UVmKIAO_xq0FueOVeg0vHigEYDS6HiCj-iImHYawr0s"
+                  redirect_uri: "https://localhost:3000/callback"
+                  refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NjQ4YWM0Ny1jMWYyLTQzYWQtOTk3YS05MjVjNzdlMGM4YmEiLCJpYXQiOjE2OTM0X0.DpFXO1fj83YQJ4t41FF0WZnml1Yx9E1MIAPChuk7ssM"
+              "grant_type+client_id+client_secret+redirect_uri+username+password":
+                value:
+                  grant_type: "password"
+                  client_id: "DSU42ZeQExNmddRTLjHBMDEr0zAZBwtr"
+                  client_secret: "zvIZg0MEpE6cmEV4UVmKIAO_xq0FueOVeg0vHigEYDS6HiCj-iImHYawr0s"
+                  redirect_uri: "https://localhost:3000/callback"
+                  username: "1234567890"
+                  password: "password1"
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                code:
+                  type: string
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+                redirect_uri:
+                  type: string
+                refresh_token:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+                code_verifier:
+                  type: string
+      responses:
+        200:
+          description: >
+            Return a successfull response with object of created tokens.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.qoiS_No"
+                  token_type: 
+                    type: string
+                    example: "bearer"
+                  accessTokenExpiresAt:
+                    type: string
+                    example: "2023-08-31T13:30:21.238Z"
+                  refreshToken: 
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2Vw"
+                  refreshTokenExpiresAt:
+                    type: string
+                    example: "2023-09-01T12:30:21.242Z"
+                  scope: 
+                    type: string
+                    example: "phone profile email openid"
+                  client:
+                    type: string
+                    example: {"id": "DSU4c2ZeQExNmddRTLj7YpHBMDEr0zAZBwtr"}
+                  user: 
+                    type: string
+                    example: {"id": "8648ac47-c1f2-43ad-997a-925c77e0c8ba"}
+                  id_token:
+                    type: string
+                    example: "ey9.eyJzdWIiOiI4NjQ4YWM0Ny1jMWYyLTQzYWQtOTk3YS05MjVjNzdlMGM4YmEiLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDozMDAwLyIsImF1ZCI6IkRTVTQyWmVRRXhObWRkUlRMajdZcEhCTURFcjB6QVpCd3RyIiwiaWF0IjoxNjkzNDg1MDIxLCJleHAiOjM2MDAsImVtYWlsIjpudWxsLCJwaG9uZSI6Ijc0MzU4MTA0ODMifQ.-HxuBHcK52552GJYHkpM_ZKYmrXKUoSGH5wOgfKUk4k"
+
+        400:
+          description: If missing or invalid parameters.
+          $ref: "#/components/responses/BadRequestResponse"
+        
+        404:
+          description: It may also mean that the operation failed due to some constraint not being met.
+          $ref: "#/components/responses/NotFoundResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /oauth/authenticate:
+    get:
+      summary: Protected oauth route.
+      description: >
+        Protected route, only access through bearer token in a authorization header
+      tags:
+        - oauth
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: >
+            Return a successfull response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "8648ac47-c1f2-43ad-997a-925c77e0c8ba"
+                  email: 
+                    type: string
+                    example: "test@example.com"
+                  phone:
+                    type: integer
+                    example: "1234567890"
+
+        401:
+          description: It may also mean that the operation failed due to token not passed or invalid token.
+          $ref: "#/components/responses/UnauthorizedResponse"
+
+        403: 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+  /oauth/google:
+    get:
+      summary: Initiate Google OAuth Login.
+      description: >
+        Initiates the Google OAuth login process.
+      tags:
+        - socialAuth
+      security:
+        - oAuthGoogle: [profile, email]
+      responses:
+        302:
+          description: Redirects to Google OAuth consent screen.
+
+  /oauth/callback:
+    get:
+      summary: Google OAuth Callback.
+      description: >
+        Callback endpoint for Google OAuth login.
+      tags:
+        - socialAuth
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: scope
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: authuser
+          in: query
+          schema:
+            type: string
+        - name: prompt
+          in: query
+          schema:
+            type: string
+      responses:
+        302:
+          description: Redirects to success or failure endpoint.
+
+  /oauth/facebook:
+    get:
+      summary: Initiate Facebook OAuth Login.
+      description: >
+        Initiates the Facebook OAuth login process.
+      tags:
+        - socialAuth
+      security:
+        - oAuthFacebook: []
+      responses:
+        302:
+          description: Redirects to Facebook OAuth consent screen.
+
+  /oauth/facebook/callback:
+    get:
+      summary: Facebook OAuth Callback.
+      description: >
+        Callback endpoint for Facebook OAuth login.
+      tags:
+        - socialAuth
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        302:
+          description: Redirects to success or failure endpoint.
+
+  /oauth/apple:
+    get:
+      summary: Initiate Apple OAuth Login.
+      description: >
+        Initiates the Apple OAuth login process.
+      tags:
+        - socialAuth
+      security:
+        - oAuthApple: [email, name]
+      responses:
+        302:
+          description: Redirects to Apple OAuth consent screen.
+
+  /oauth/apple/callback:
+    get:
+      summary: Apple OAuth Callback.
+      description: >
+        Callback endpoint for Apple OAuth login.
+      tags:
+        - socialAuth
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        302:
+          description: Redirects to success or failure endpoint.
+
+  /oauth/callback/success:
+    get:
+      summary: Successful Google OAuth Callback.
+      description: >
+        Successful callback endpoint for Google OAuth login.
+      tags:
+        - socialAuth
+      responses:
+        200:
+          description: Successfully authenticated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      name:
+                        type: string
+
+  /oauth/callback/failure:
+    get:
+      summary: Failed Google OAuth Callback.
+      description: >
+        Failed callback endpoint for Google OAuth login.
+      tags:
+        - socialAuth
+      responses:
+        400:
+          description: Failed to authenticate.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "error"
+                  message:
+                    type: string
+                    example: "Internal server error"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: >
+        An access token in the form of a JWT issued by this server.
+
+    basicAuth:
+      type: http
+      scheme: basic
+
+    oAuthGoogle:
+      type: oauth2
+      description: Google OAuth 2.0 flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://localhost:3000/oauth/google
+          scopes:
+            profile: read your profile
+            email: read your email
+
+    oAuthFacebook:
+      type: oauth2
+      description: Facebook OAuth 2.0 flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://localhost:3000/oauth/facebook
+          scopes: {}
+
+    oAuthApple:
+      type: oauth2
+      description: Apple OAuth 2.0 flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://localhost:3000/oauth/apple
+          scopes:
+            email: read your Apple email
+            name: read your Apple name
+
+  schemas:
+    ErrorSchema:
+      type: object
+      properties:
+        error:
+          type: string
+          description: |-
+            Certain responses will contain this property with the provided values.
+
+            Usually one of these:
+              - invalid_request
+              - unauthorized_client
+              - access_denied
+              - server_error
+              - temporarily_unavailable
+              - unsupported_otp_type
+        error_description:
+          type: string
+          description: >
+            Certain responses that have an `error` property may have this property which describes the error.
+        code:
+          type: integer
+          description: >
+            The HTTP status code. Usually missing if `error` is present.
+          example: 400
+        msg:
+          type: string
+          description: >
+            A basic message describing the problem with the request. Usually missing if `error` is present.
+
+  responses:
+    BadRequestResponse:
+      description: >
+        HTTP Bad Request response. Can occur if the passed in JSON cannot be unmarshalled properly.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              messages: 
+                type: array
+                items:
+                  type: string
+
+    NotFoundResponse:
+      description: >
+        HTTP Not Found response. Can failed due to some constraint not being met 
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              message: 
+                type: string
+
+    UnauthorizedResponse:
+      description: >
+        HTTP Unauthorizred response.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+
+    ForbiddenResponse:
+      description: >
+        HTTP Forbidden response.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorSchema"
+
+    InternalServerErrorResponse:
+      description: >
+        HTTP Internal Server Error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorSchema"

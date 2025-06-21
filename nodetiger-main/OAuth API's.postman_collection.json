@@ -1,0 +1,206 @@
+{
+	"info": {
+		"_postman_id": "b19efc91-f71f-43b8-88a2-ba93548047fe",
+		"name": "OAuth API's",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12111318"
+	},
+	"item": [
+		{
+			"name": "Set Client",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"clientId\": \"DSU42ZeQExNmddRTLj7YpHBMDEr0zAZBwtr\",\n    \"clientSecret\": \"zvIZg0MEpE6cmEV4UVmKIAO_xq0FueOVeg0vWiHoMHigEYDS6HiCj-iImHYawr0s\",\n    \"redirectUri\": \"http://localhost:3000/callback\",\n    \"grants\": [\n        \"authorization_code\",\n        \"refresh_token\",\n        \"password\"\n    ],\n    \"scopes\": [\n        \"phone\",\n        \"profile\",\n        \"email\",\n        \"openid\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:3000/oauth/set_client",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"oauth",
+						"set_client"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authorisation request",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:3000/oauth/authorize?response_type=code&client_id=DSU42ZeQExNmddRTLj7YpHBMDEr0zAZBwtr&redirect_uri=http://localhost:3000/callback&scope=phone profile email openid&state=2dsskf10801ds&code_challange=X4uUEDth6mzW4ljGf9HNUkUNLonY98avtTFnQtXZ_hY&code_challange_method=S256",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"oauth",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "response_type",
+							"value": "code"
+						},
+						{
+							"key": "client_id",
+							"value": "DSU42ZeQExNmddRTLj7YpHBMDEr0zAZBwtr"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:3000/callback"
+						},
+						{
+							"key": "scope",
+							"value": "phone profile email openid"
+						},
+						{
+							"key": "state",
+							"value": "2dsskf10801ds"
+						},
+						{
+							"key": "code_challange",
+							"value": "X4uUEDth6mzW4ljGf9HNUkUNLonY98avtTFnQtXZ_hY"
+						},
+						{
+							"key": "code_challange_method",
+							"value": "S256"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Access Token",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "DSU42ZeQExNmddRTLj7YpHBMDEr0zAZBwtr",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "zvIZg0MEpE6cmEV4UVmKIAO_xq0FueOVeg0vWiHoMHigEYDS6HiCj-iImHYawr0s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "authorization_code",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "a3155fbb47f6f298cab79b17eb498ab89762bb0f",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "DSU42ZeQExNmddRTLj7YpHBMDEr0zAZBwtr",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "zvIZg0MEpE6cmEV4UVmKIAO_xq0FueOVeg0vWiHoMHigEYDS6HiCj-iImHYawr0s",
+							"type": "text"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:3000/callback",
+							"type": "text"
+						},
+						{
+							"key": "refresh_token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDRjOTZkZC1hMzAzLTQxYTktYjUwYi0xZTJiYzI2ZTEyNTIiLCJpYXQiOjE2OTI2MDgxMDMsImV4cCI6MTY5MjYwODE4OX0.2uoI--EJdZxVCHd41F6ZsSVoqmDYevQIJy9UiTNrS3U",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "asif@krishaweb.com",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "Q9&f)e4i!",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "code_verifier",
+							"value": "asif",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:3000/oauth/token",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Protected Route",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDRjOTZkZC1hMzAzLTQxYTktYjUwYi0xZTJiYzI2ZTEyNTIiLCJpYXQiOjE2OTI2MDgwMzMsImV4cCI6MTY5MjYwODAzNn0.EC8cJ6MFqVKkqctfReaEY4pd_slim266ZKADoaaADgc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:3000/oauth/authenticate",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"oauth",
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

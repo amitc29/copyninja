@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+      build: .
+      restart: always
+      ports: 
+        - '6000:6000'
+      depends_on:
+        - db
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres.dev
+    container_name: gotiger_postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=postgres
+      # sets the schema name, this should match the `NAMESPACE` env var set in your .env file
+      - DB_NAMESPACE=auth
+volumes:
+  postgres_data:

@@ -1,0 +1,425 @@
+{
+	"info": {
+		"_postman_id": "9148a801-9b34-44f5-acea-d9e74cab4df0",
+		"name": "Node Tiger API's",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12111318"
+	},
+	"item": [
+		{
+			"name": "Registration",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"phone\": \"7435810483\",\n  \"password\": \"Q9&f)e4i!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/register",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Password less registration",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"phone\": \"9023275909\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/register-passwordless",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"register-passwordless"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify OTP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"phone\": \"9023275909\",\n  \"otp\": \"910703\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/verify-otp",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"verify-otp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sent OTP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"phone\": \"9023275909\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/send-otp",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"send-otp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"phone\": \"7435810483\",\n  \"password\": \"3xo902us09\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Protected Route",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-length": true,
+					"host": true,
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NjQ4YWM0Ny1jMWYyLTQzYWQtOTk3YS05MjVjNzdlMGM4YmEiLCJpYXQiOjE2OTM0NzM2MTIsImV4cCI6MTY5MzQ3NzIxMn0.yzDqZXUmYHF2DzVdgIFYVlBJ2ba1XTDtIbXaJlcUnjM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5008/protected",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"protected"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get tokens",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"grant_type\": \"refresh_token\",\n  \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTY5MTc1Nzg0OCwiZXhwIjoxNjkxODQ0MjQ4fQ.lez5rnUzyoq1TtgQAP9NgkmM11atoR-kuL4tosyrjBM\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/token",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5008/logout",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Forgot Password ",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"phone\": \"7435810483\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/forgot-password",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"forgot-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Recover Password Through OTP Verification",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"phone\": \"7435810483\",\n  \"otp\": \"235326\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/verify",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reset Password",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NjQ4YWM0Ny1jMWYyLTQzYWQtOTk3YS05MjVjNzdlMGM4YmEiLCJpYXQiOjE2OTM0NzEwMzcsImV4cCI6MTY5MzQ3NDYzN30._Wr0ZSoP4msiDYpKtCNJ2hlCHCctFSLoEuAU2zfs2sQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"phone\": \"7435810483\",\n  \"password\": \"axo902us09\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/reset-password",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"reset-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Recover Password Through Email Link Verification",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5008/verify",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sent an OTP through twilio",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"phone\": \"9023275909\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/send-twilio-otp",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"send-twilio-otp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify an OTP through twilio",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"phone\": \"9023275909\",\n    \"otp\": \"489796\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5008/verify-twilio-otp",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5008",
+					"path": [
+						"verify-twilio-otp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an account",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:3000/delete-account/4651-8950-8182",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"delete-account",
+						"4651-8950-8182"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
